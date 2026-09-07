@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.3] - 2026-09-07
+
+- Changed: ▶ Run now always executes the command immediately in the terminal, for every command
+  — including ones with arguments (Artisan itself will interactively prompt for anything required
+  that's missing, e.g. `make:model`'s name). Previously it opened an inline form instead of
+  running, which read as broken.
+- Added a separate ⚙ button (only for commands with arguments/options) to pre-fill values and
+  toggle flags like `-m`/`-c` before running, instead of overloading the Run button.
+
 ## [1.0.2] - 2026-09-07
 
 - Fixed: for commands that need arguments/options (e.g. `make:model`), clicking ▶ opened the

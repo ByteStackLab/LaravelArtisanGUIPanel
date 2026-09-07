@@ -154,12 +154,23 @@
 
     const runBtn = document.createElement('button');
     runBtn.className = 'icon-btn';
-    runBtn.title = form ? 'Fill in arguments to run' : 'Run';
+    runBtn.title = form
+      ? 'Run now (Artisan will prompt for any missing details in the terminal)'
+      : 'Run';
     runBtn.textContent = '▶';
     runBtn.addEventListener('click', () => {
-      if (form) {
+      vscode.postMessage({ type: 'run', command: cmd.name });
+    });
+    actions.appendChild(runBtn);
+
+    if (form) {
+      const configureBtn = document.createElement('button');
+      configureBtn.className = 'icon-btn';
+      configureBtn.title = 'Set arguments/options before running';
+      configureBtn.textContent = '⚙';
+      configureBtn.addEventListener('click', () => {
         form.hidden = !form.hidden;
-        runBtn.classList.toggle('active', !form.hidden);
+        configureBtn.classList.toggle('active', !form.hidden);
         if (!form.hidden) {
           form.scrollIntoView({ block: 'nearest' });
           const firstInput = form.querySelector('input');
@@ -167,11 +178,9 @@
             firstInput.focus();
           }
         }
-      } else {
-        vscode.postMessage({ type: 'run', command: cmd.name });
-      }
-    });
-    actions.appendChild(runBtn);
+      });
+      actions.appendChild(configureBtn);
+    }
 
     const copyBtn = document.createElement('button');
     copyBtn.className = 'icon-btn';
