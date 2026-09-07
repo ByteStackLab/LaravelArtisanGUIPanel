@@ -1,4 +1,4 @@
-# Laravel Artisan Toolkit
+# Laravel Artisan GUI Panel
 
 A lightweight VS Code extension that adds a sidebar panel for browsing, searching, copying, and running Laravel Artisan commands — no need to type `php artisan ...` in the terminal.
 
