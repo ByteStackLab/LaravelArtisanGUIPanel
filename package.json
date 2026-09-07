@@ -2,15 +2,36 @@
   "name": "laravel-artisan-gui",
   "displayName": "Laravel Artisan GUI",
   "description": "Browse, search, copy, and run Laravel Artisan commands from a sidebar panel without typing them in the terminal.",
-  "version": "0.0.1",
-  "publisher": "local",
-  "private": true,
+  "version": "1.0.0",
+  "publisher": "bytestacklab",
+  "license": "MIT",
+  "icon": "media/icon.png",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "laravel",
+    "artisan",
+    "php",
+    "bytestacklab",
+    "make:controller",
+    "migration"
+  ],
+  "galleryBanner": {
+    "color": "#0F111A",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ByteStackLab/LaravelArtisanToolkit"
+  },
+  "homepage": "https://bytestacklab.com",
+  "bugs": {
+    "url": "https://github.com/ByteStackLab/LaravelArtisanToolkit/issues"
+  },
   "activationEvents": [
     "workspaceContains:artisan",
     "workspaceContains:*/artisan"
@@ -60,6 +81,7 @@
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.9.2",
     "typescript": "^5.4.0"
   }
 }

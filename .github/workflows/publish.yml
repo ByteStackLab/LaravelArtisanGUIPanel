@@ -1,0 +1,79 @@
+name: Publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if package.json version was bumped
+        id: check
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists — nothing to release."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "New version v$VERSION detected — will release."
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.release == 'true'
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        if: steps.check.outputs.release == 'true'
+        run: npm ci
+
+      - name: Install publishing tools
+        if: steps.check.outputs.release == 'true'
+        run: npm install -g @vscode/vsce ovsx
+
+      - name: Package extension
+        if: steps.check.outputs.release == 'true'
+        run: vsce package
+
+      - name: Publish to Visual Studio Marketplace
+        if: steps.check.outputs.release == 'true'
+        run: vsce publish --skip-duplicate -p "$VSCE_PAT"
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Publish to Open VSX Registry
+        if: steps.check.outputs.release == 'true'
+        run: ovsx publish --skip-duplicate -p "$OVSX_TOKEN"
+        env:
+          OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
+
+      - name: Extract this version's changelog section
+        if: steps.check.outputs.release == 'true'
+        run: awk '/^## \[/{n++} n==1' CHANGELOG.md > release-notes.md
+
+      - name: Tag the release
+        if: steps.check.outputs.release == 'true'
+        run: |
+          git tag "v${{ steps.check.outputs.version }}"
+          git push origin "v${{ steps.check.outputs.version }}"
+
+      - name: Create GitHub Release
+        if: steps.check.outputs.release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ steps.check.outputs.version }}"
+          name: "v${{ steps.check.outputs.version }}"
+          body_path: release-notes.md
+          files: "*.vsix"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

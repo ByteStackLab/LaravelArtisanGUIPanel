@@ -1,0 +1,12 @@
+.vscode/**
+.git/**
+.github/**
+.gitignore
+*.vsix
+node_modules/**
+src/**
+tsconfig.json
+out/**/*.map
+media/marketplace-icon.svg
+PUBLISHING.md
+Laravel Artisan GUI — VS Code Extension.md
