@@ -1,0 +1,65 @@
+{
+  "name": "laravel-artisan-gui",
+  "displayName": "Laravel Artisan GUI",
+  "description": "Browse, search, copy, and run Laravel Artisan commands from a sidebar panel without typing them in the terminal.",
+  "version": "0.0.1",
+  "publisher": "local",
+  "private": true,
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:artisan",
+    "workspaceContains:*/artisan"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "laravelArtisan",
+          "title": "Laravel Artisan",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "laravelArtisan": [
+        {
+          "type": "webview",
+          "id": "laravelArtisan.panel",
+          "name": "Artisan Commands"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "laravelArtisan.refresh",
+        "title": "Laravel Artisan: Refresh Commands",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "laravelArtisan.refresh",
+          "when": "view == laravelArtisan.panel",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
+}
