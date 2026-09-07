@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2] - 2026-09-07
+
+- Fixed: for commands that need arguments/options (e.g. `make:model`), clicking ▶ opened the
+  inline form silently with no visible feedback, which looked like the button did nothing. It now
+  highlights the button, scrolls the form into view, and focuses the first field.
+
 ## [1.0.1] - 2026-09-07
 
 - Fixed: Run button would open the terminal and type the command but not execute it, when a new

@@ -126,6 +126,11 @@ body {
   color: var(--vscode-textLink-foreground);
 }
 
+.icon-btn.active {
+  opacity: 1;
+  color: var(--vscode-textLink-activeForeground, var(--vscode-textLink-foreground));
+}
+
 .command-form {
   display: flex;
   flex-direction: column;
@@ -134,6 +139,7 @@ body {
   background: var(--vscode-editorWidget-background);
   margin: 0 8px 6px 8px;
   border-radius: 3px;
+  border-left: 3px solid var(--vscode-focusBorder);
 }
 
 .command-form label {

@@ -154,11 +154,19 @@
 
     const runBtn = document.createElement('button');
     runBtn.className = 'icon-btn';
-    runBtn.title = 'Run';
+    runBtn.title = form ? 'Fill in arguments to run' : 'Run';
     runBtn.textContent = '▶';
     runBtn.addEventListener('click', () => {
       if (form) {
         form.hidden = !form.hidden;
+        runBtn.classList.toggle('active', !form.hidden);
+        if (!form.hidden) {
+          form.scrollIntoView({ block: 'nearest' });
+          const firstInput = form.querySelector('input');
+          if (firstInput) {
+            firstInput.focus();
+          }
+        }
       } else {
         vscode.postMessage({ type: 'run', command: cmd.name });
       }

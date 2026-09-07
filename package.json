@@ -2,7 +2,7 @@
   "name": "laravel-artisan-gui-panel",
   "displayName": "Laravel Artisan GUI Panel",
   "description": "Browse, search, copy, and run Laravel Artisan commands from a sidebar panel without typing them in the terminal.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "bytestacklab",
   "license": "MIT",
   "icon": "media/icon.png",
