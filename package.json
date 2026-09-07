@@ -27,11 +27,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ByteStackLab/LaravelArtisanToolkit"
+    "url": "https://github.com/ByteStackLab/LaravelArtisanGUIPanel"
   },
   "homepage": "https://bytestacklab.com",
   "bugs": {
-    "url": "https://github.com/ByteStackLab/LaravelArtisanToolkit/issues"
+    "url": "https://github.com/ByteStackLab/LaravelArtisanGUIPanel/issues"
   },
   "activationEvents": [
     "workspaceContains:artisan",

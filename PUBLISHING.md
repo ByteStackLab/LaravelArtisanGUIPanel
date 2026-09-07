@@ -12,7 +12,10 @@ publisher — এগুলো **আগে থেকেই আছে** (ByteStack
 
 ## বর্তমান অবস্থা (কী কী Ready)
 
-- ✅ GitHub repo push হয়ে গেছে: https://github.com/ByteStackLab/LaravelArtisanToolkit
+- ✅ GitHub repo push হয়ে গেছে: https://github.com/ByteStackLab/LaravelArtisanGUIPanel
+  (repo folder-এর নাম এখনো `LaravelArtisanToolkit`, কিন্তু GitHub-এ repo rename করে
+  `LaravelArtisanGUIPanel` করা হয়েছে extension-এর final নামের সাথে মিলিয়ে — পুরনো URL এখনো
+  redirect করে, তবে নতুনটাই ব্যবহার করা উচিত)
 - ✅ `package.json` — publisher, repository, license, icon, keywords সব সেট করা
 - ✅ Marketplace icon (`media/icon.png`, 512x512)
 - ✅ README, CHANGELOG, LICENSE, `.vscodeignore`
@@ -37,7 +40,7 @@ Material Theme-এর জন্য যে PAT token গুলো বানিয
 হবে না, শুধু এই repo-তে secret হিসেবে add করতে হবে (GitHub secret value একবার set করলে আর পড়া যায় না,
 তাই এক repo থেকে অন্য repo-তে copy করার কোনো automatic উপায় নেই):
 
-1. https://github.com/ByteStackLab/LaravelArtisanToolkit/settings/secrets/actions এ যান
+1. https://github.com/ByteStackLab/LaravelArtisanGUIPanel/settings/secrets/actions এ যান
 2. **New repository secret** → Name: `VSCE_PAT` → Value: Material Theme-এর জন্য যে Azure PAT token
    password manager-এ রেখেছিলেন সেটা paste করুন
 3. আবার **New repository secret** → Name: `OVSX_TOKEN` → Value: Open VSX token paste করুন
@@ -45,8 +48,8 @@ Material Theme-এর জন্য যে PAT token গুলো বানিয
 
 > Terminal থেকেও করা যায় (`gh` CLI login করা আছে এই মেশিনে):
 > ```bash
-> gh secret set VSCE_PAT --repo ByteStackLab/LaravelArtisanToolkit
-> gh secret set OVSX_TOKEN --repo ByteStackLab/LaravelArtisanToolkit
+> gh secret set VSCE_PAT --repo ByteStackLab/LaravelArtisanGUIPanel
+> gh secret set OVSX_TOKEN --repo ByteStackLab/LaravelArtisanGUIPanel
 > ```
 > কমান্ড চালালে terminal-এ paste করতে বলবে — token সরাসরি টাইপ/paste করবেন, কোনো chat/message-এ না।
 
