@@ -25,101 +25,6 @@
   let query = '';
   const collapsed = new Set();
 
-  function quoteIfNeeded(value) {
-    return /\s/.test(value) ? `"${value.replace(/"/g, '\\"')}"` : value;
-  }
-
-  function buildCommand(cmd, form) {
-    const parts = [cmd.name];
-
-    for (const arg of cmd.arguments) {
-      const input = form.querySelector(`[data-arg="${arg.name}"]`);
-      const raw = input ? input.value.trim() : '';
-      if (!raw) {
-        continue;
-      }
-      if (arg.is_array) {
-        raw
-          .split(',')
-          .map((v) => v.trim())
-          .filter(Boolean)
-          .forEach((v) => parts.push(quoteIfNeeded(v)));
-      } else {
-        parts.push(quoteIfNeeded(raw));
-      }
-    }
-
-    for (const opt of cmd.options) {
-      if (opt.accept_value) {
-        const input = form.querySelector(`[data-opt="${opt.name}"]`);
-        const raw = input ? input.value.trim() : '';
-        if (raw) {
-          parts.push(`--${opt.name}=${quoteIfNeeded(raw)}`);
-        }
-      } else {
-        const checkbox = form.querySelector(`[data-opt="${opt.name}"]`);
-        if (checkbox && checkbox.checked) {
-          parts.push(`--${opt.name}`);
-        }
-      }
-    }
-
-    return parts.join(' ');
-  }
-
-  function renderForm(cmd) {
-    const wrap = document.createElement('div');
-    wrap.className = 'command-form';
-    wrap.hidden = true;
-
-    for (const arg of cmd.arguments) {
-      const label = document.createElement('label');
-      label.textContent = `${arg.name}${arg.is_required ? ' *' : ''}${arg.is_array ? ' (comma separated)' : ''}`;
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.dataset.arg = arg.name;
-      if (arg.default) {
-        input.placeholder = String(arg.default);
-      }
-      label.appendChild(input);
-      wrap.appendChild(label);
-    }
-
-    for (const opt of cmd.options) {
-      if (opt.accept_value) {
-        const label = document.createElement('label');
-        label.textContent = `--${opt.name}`;
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.dataset.opt = opt.name;
-        if (opt.default) {
-          input.placeholder = String(opt.default);
-        }
-        label.appendChild(input);
-        wrap.appendChild(label);
-      } else {
-        const label = document.createElement('label');
-        label.className = 'checkbox-label';
-        const input = document.createElement('input');
-        input.type = 'checkbox';
-        input.dataset.opt = opt.name;
-        label.appendChild(input);
-        label.appendChild(document.createTextNode(`--${opt.name}${opt.shortcut ? ` (-${opt.shortcut})` : ''}`));
-        wrap.appendChild(label);
-      }
-    }
-
-    const runBtn = document.createElement('button');
-    runBtn.className = 'submit-run';
-    runBtn.textContent = 'Run';
-    runBtn.addEventListener('click', () => {
-      vscode.postMessage({ type: 'run', command: buildCommand(cmd, wrap) });
-    });
-    wrap.appendChild(runBtn);
-
-    return wrap;
-  }
-
   function matchesQuery(cmd) {
     if (!query) {
       return true;
@@ -150,11 +55,10 @@
     actions.className = 'command-actions';
 
     const hasParams = cmd.arguments.length > 0 || cmd.options.length > 0;
-    const form = hasParams ? renderForm(cmd) : null;
 
     const runBtn = document.createElement('button');
     runBtn.className = 'icon-btn';
-    runBtn.title = form
+    runBtn.title = hasParams
       ? 'Run now (Artisan will prompt for any missing details in the terminal)'
       : 'Run';
     runBtn.textContent = '▶';
@@ -162,25 +66,6 @@
       vscode.postMessage({ type: 'run', command: cmd.name });
     });
     actions.appendChild(runBtn);
-
-    if (form) {
-      const configureBtn = document.createElement('button');
-      configureBtn.className = 'icon-btn';
-      configureBtn.title = 'Set arguments/options before running';
-      configureBtn.textContent = '⚙';
-      configureBtn.addEventListener('click', () => {
-        form.hidden = !form.hidden;
-        configureBtn.classList.toggle('active', !form.hidden);
-        if (!form.hidden) {
-          form.scrollIntoView({ block: 'nearest' });
-          const firstInput = form.querySelector('input');
-          if (firstInput) {
-            firstInput.focus();
-          }
-        }
-      });
-      actions.appendChild(configureBtn);
-    }
 
     const copyBtn = document.createElement('button');
     copyBtn.className = 'icon-btn';
@@ -193,9 +78,6 @@
 
     row.appendChild(actions);
     container.appendChild(row);
-    if (form) {
-      container.appendChild(form);
-    }
   }
 
   function appendPinnedSection(container, key, title, cmds) {

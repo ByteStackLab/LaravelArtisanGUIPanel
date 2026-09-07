@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4] - 2026-09-07
+
+- Removed the ⚙ "configure arguments" button and inline form entirely — Run always executes
+  immediately for every command, and Artisan's own interactive terminal prompts handle anything
+  missing. Simpler UI, same capability.
+- Expanded README with an Installation section and updated the usage walkthrough to match.
+
 ## [1.0.3] - 2026-09-07
 
 - Changed: ▶ Run now always executes the command immediately in the terminal, for every command
