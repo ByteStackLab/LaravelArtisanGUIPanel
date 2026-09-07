@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1] - 2026-09-07
+
+- Fixed: Run button would open the terminal and type the command but not execute it, when a new
+  terminal had to be created (the shell wasn't ready yet to accept input)
+- Added a pinned "⭐ Common Commands" section (make:controller, make:model, make:migration, migrate,
+  db:seed, etc.) always shown at the top
+- Added a "🕒 Recently Used" section that tracks the last commands you ran, per workspace
+
 ## [1.0.0] - 2026-09-07
 
 - Initial release

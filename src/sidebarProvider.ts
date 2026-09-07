@@ -1,14 +1,21 @@
 import * as vscode from 'vscode';
 import { detectArtisanCommands } from './artisanService';
 
+const RECENT_KEY = 'laravelArtisan.recent';
+const MAX_RECENT = 6;
+
 let terminal: vscode.Terminal | undefined;
 
-function getTerminal(cwd: string): vscode.Terminal {
+function getTerminal(cwd: string): { terminal: vscode.Terminal; isNew: boolean } {
   if (terminal && vscode.window.terminals.includes(terminal)) {
-    return terminal;
+    return { terminal, isNew: false };
   }
   terminal = vscode.window.createTerminal({ name: 'Artisan', cwd });
-  return terminal;
+  return { terminal, isNew: true };
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function getNonce(): string {
@@ -47,7 +54,15 @@ export class ArtisanSidebarProvider implements vscode.WebviewViewProvider {
       return;
     }
     const result = await detectArtisanCommands();
-    void this.view.webview.postMessage({ type: 'state', ...result });
+    const recent = this.context.workspaceState.get<string[]>(RECENT_KEY, []);
+    void this.view.webview.postMessage({ type: 'state', ...result, recent });
+  }
+
+  private recordRecent(commandName: string): void {
+    const recent = this.context.workspaceState.get<string[]>(RECENT_KEY, []);
+    const next = [commandName, ...recent.filter((name) => name !== commandName)].slice(0, MAX_RECENT);
+    void this.context.workspaceState.update(RECENT_KEY, next);
+    void this.view?.webview.postMessage({ type: 'recent', recent: next });
   }
 
   private async handleMessage(message: any): Promise<void> {
@@ -67,9 +82,15 @@ export class ArtisanSidebarProvider implements vscode.WebviewViewProvider {
           void vscode.window.showErrorMessage('No Laravel project (artisan file) found in this workspace.');
           return;
         }
-        const term = getTerminal(result.root);
+        const { terminal: term, isNew } = getTerminal(result.root);
         term.show();
+        if (isNew) {
+          // A freshly created terminal's shell isn't ready to accept input yet —
+          // sendText right away gets typed but not executed.
+          await sleep(300);
+        }
         term.sendText(`php artisan ${message.command}`.trim());
+        this.recordRecent(String(message.command).split(' ')[0]);
         break;
       }
     }

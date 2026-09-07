@@ -4,8 +4,24 @@
   const searchInput = document.getElementById('search');
   const refreshBtn = document.getElementById('refresh-btn');
 
-  /** @type {{root?: string, commands: any[], error?: string}} */
-  let state = { commands: [] };
+  const COMMON_COMMANDS = [
+    'make:controller',
+    'make:model',
+    'make:migration',
+    'make:request',
+    'make:middleware',
+    'make:seeder',
+    'migrate',
+    'migrate:fresh',
+    'migrate:rollback',
+    'db:seed',
+    'route:list',
+    'cache:clear',
+    'config:clear',
+  ];
+
+  /** @type {{root?: string, commands: any[], error?: string, recent?: string[]}} */
+  let state = { commands: [], recent: [] };
   let query = '';
   const collapsed = new Set();
 
@@ -112,6 +128,88 @@
     return cmd.name.toLowerCase().includes(q) || cmd.description.toLowerCase().includes(q);
   }
 
+  function appendCommandRow(container, cmd) {
+    const row = document.createElement('div');
+    row.className = 'command-row';
+
+    const main = document.createElement('div');
+    main.className = 'command-main';
+    const name = document.createElement('div');
+    name.className = 'command-name';
+    name.textContent = cmd.name;
+    main.appendChild(name);
+    if (cmd.description) {
+      const desc = document.createElement('div');
+      desc.className = 'command-desc';
+      desc.textContent = cmd.description;
+      main.appendChild(desc);
+    }
+    row.appendChild(main);
+
+    const actions = document.createElement('div');
+    actions.className = 'command-actions';
+
+    const hasParams = cmd.arguments.length > 0 || cmd.options.length > 0;
+    const form = hasParams ? renderForm(cmd) : null;
+
+    const runBtn = document.createElement('button');
+    runBtn.className = 'icon-btn';
+    runBtn.title = 'Run';
+    runBtn.textContent = '▶';
+    runBtn.addEventListener('click', () => {
+      if (form) {
+        form.hidden = !form.hidden;
+      } else {
+        vscode.postMessage({ type: 'run', command: cmd.name });
+      }
+    });
+    actions.appendChild(runBtn);
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'icon-btn';
+    copyBtn.title = 'Copy';
+    copyBtn.textContent = '⧉';
+    copyBtn.addEventListener('click', () => {
+      vscode.postMessage({ type: 'copy', text: `php artisan ${cmd.name}` });
+    });
+    actions.appendChild(copyBtn);
+
+    row.appendChild(actions);
+    container.appendChild(row);
+    if (form) {
+      container.appendChild(form);
+    }
+  }
+
+  function appendPinnedSection(container, key, title, cmds) {
+    if (cmds.length === 0) {
+      return;
+    }
+    const section = document.createElement('div');
+    section.className = 'category';
+
+    const header = document.createElement('div');
+    header.className = 'category-header';
+    header.textContent = `${collapsed.has(key) ? '▸' : '▾'} ${title} (${cmds.length})`;
+    header.addEventListener('click', () => {
+      if (collapsed.has(key)) {
+        collapsed.delete(key);
+      } else {
+        collapsed.add(key);
+      }
+      render();
+    });
+    section.appendChild(header);
+
+    if (!collapsed.has(key)) {
+      for (const cmd of cmds) {
+        appendCommandRow(section, cmd);
+      }
+    }
+
+    container.appendChild(section);
+  }
+
   function groupByCategory(commands) {
     const groups = new Map();
     for (const cmd of commands) {
@@ -151,6 +249,18 @@
       return;
     }
 
+    if (!query) {
+      const byName = new Map(state.commands.map((cmd) => [cmd.name, cmd]));
+
+      const recentCmds = (state.recent || [])
+        .map((name) => byName.get(name))
+        .filter(Boolean);
+      appendPinnedSection(content, '__recent', '🕒 Recently Used', recentCmds);
+
+      const commonCmds = COMMON_COMMANDS.map((name) => byName.get(name)).filter(Boolean);
+      appendPinnedSection(content, '__common', '⭐ Common Commands', commonCmds);
+    }
+
     const groups = groupByCategory(filtered);
     for (const [category, cmds] of groups) {
       const section = document.createElement('div');
@@ -171,56 +281,7 @@
 
       if (!collapsed.has(category)) {
         for (const cmd of cmds) {
-          const row = document.createElement('div');
-          row.className = 'command-row';
-
-          const main = document.createElement('div');
-          main.className = 'command-main';
-          const name = document.createElement('div');
-          name.className = 'command-name';
-          name.textContent = cmd.name;
-          main.appendChild(name);
-          if (cmd.description) {
-            const desc = document.createElement('div');
-            desc.className = 'command-desc';
-            desc.textContent = cmd.description;
-            main.appendChild(desc);
-          }
-          row.appendChild(main);
-
-          const actions = document.createElement('div');
-          actions.className = 'command-actions';
-
-          const hasParams = cmd.arguments.length > 0 || cmd.options.length > 0;
-          const form = hasParams ? renderForm(cmd) : null;
-
-          const runBtn = document.createElement('button');
-          runBtn.className = 'icon-btn';
-          runBtn.title = 'Run';
-          runBtn.textContent = '▶';
-          runBtn.addEventListener('click', () => {
-            if (form) {
-              form.hidden = !form.hidden;
-            } else {
-              vscode.postMessage({ type: 'run', command: cmd.name });
-            }
-          });
-          actions.appendChild(runBtn);
-
-          const copyBtn = document.createElement('button');
-          copyBtn.className = 'icon-btn';
-          copyBtn.title = 'Copy';
-          copyBtn.textContent = '⧉';
-          copyBtn.addEventListener('click', () => {
-            vscode.postMessage({ type: 'copy', text: `php artisan ${cmd.name}` });
-          });
-          actions.appendChild(copyBtn);
-
-          row.appendChild(actions);
-          section.appendChild(row);
-          if (form) {
-            section.appendChild(form);
-          }
+          appendCommandRow(section, cmd);
         }
       }
 
@@ -241,6 +302,9 @@
     const message = event.data;
     if (message.type === 'state') {
       state = message;
+      render();
+    } else if (message.type === 'recent') {
+      state.recent = message.recent;
       render();
     }
   });
