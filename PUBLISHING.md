@@ -1,6 +1,6 @@
-# Laravel Artisan GUI — Publish Guide (Step by Step)
+# Laravel Artisan Toolkit — Publish Guide (Step by Step)
 
-> **Extension:** Laravel Artisan GUI
+> **Extension:** Laravel Artisan Toolkit
 > **Publisher ID:** `bytestacklab` (same publisher as ByteStackLab Material Theme — reused, not new)
 > **Microsoft Account:** mokammeltanvir@outlook.com
 > **Last updated:** September 2026
@@ -16,10 +16,11 @@ publisher — এগুলো **আগে থেকেই আছে** (ByteStack
 - ✅ `package.json` — publisher, repository, license, icon, keywords সব সেট করা
 - ✅ Marketplace icon (`media/icon.png`, 512x512)
 - ✅ README, CHANGELOG, LICENSE, `.vscodeignore`
-- ✅ `.vsix` build + local package test করা (`bytestacklab-laravel-artisan-gui-1.0.0.vsix`)
-- ⚠️ marketplace-এ package `name` টা `laravel-artisan-gui` ছিল — অন্য publisher আগে থেকেই এই নাম নিয়ে
-  ফেলেছিল (marketplace-এ extension `name` publisher নির্বিশেষে unique হতে হয়), তাই
-  `bytestacklab-laravel-artisan-gui` তে rename করা হয়েছে
+- ✅ `.vsix` build + local package test করা (`laravel-artisan-toolkit-1.0.0.vsix`)
+- ⚠️ package `name` দুইবার বদলেছে: প্রথমে `laravel-artisan-gui` ছিল, কিন্তু marketplace-এ অন্য
+  publisher আগে থেকেই এই নাম নিয়ে ফেলেছিল (extension `name` publisher নির্বিশেষে globally unique
+  হতে হয়) — তাই folder/repo নামের (`LaravelArtisanToolkit`) সাথে মিলিয়ে `laravel-artisan-toolkit`
+  এ ঠিক করা হয়েছে
 - ✅ Azure PAT + Marketplace publisher (`bytestacklab`) — reused from Material Theme, এখনো valid
 - ⬜ **এই নতুন repo-তে `VSCE_PAT` আর `OVSX_TOKEN` secret যোগ করা** (secrets repo-specific, একটা repo-তে
   add করলে অন্য repo-তে automatically যায় না)
@@ -66,7 +67,7 @@ npx vsce publish
 Success হলে ৫-১০ মিনিটের মধ্যে live:
 
 ```
-https://marketplace.visualstudio.com/items?itemName=bytestacklab.bytestacklab-laravel-artisan-gui
+https://marketplace.visualstudio.com/items?itemName=bytestacklab.laravel-artisan-toolkit
 ```
 
 Open VSX-এ প্রথমবার publish (VSCodium/Cursor/Gitpod ইউজারদের জন্য):
@@ -78,11 +79,11 @@ npx ovsx publish -p <OVSX_TOKEN>
 ### Publish হওয়ার পর Check করুন
 
 1. Marketplace link খুলে দেখুন — icon, README, description ঠিক দেখাচ্ছে কিনা
-2. VS Code Extensions panel এ "Laravel Artisan GUI" search করে দেখুন
+2. VS Code Extensions panel এ "Laravel Artisan Toolkit" search করে দেখুন
 3. Local `.vsix` uninstall করে marketplace থেকে install করুন:
    ```bash
-   code --uninstall-extension bytestacklab.bytestacklab-laravel-artisan-gui
-   code --install-extension bytestacklab.bytestacklab-laravel-artisan-gui
+   code --uninstall-extension bytestacklab.laravel-artisan-toolkit
+   code --install-extension bytestacklab.laravel-artisan-toolkit
    ```
 
 ---

@@ -1,6 +1,6 @@
 {
-  "name": "bytestacklab-laravel-artisan-gui",
-  "displayName": "Laravel Artisan GUI",
+  "name": "laravel-artisan-toolkit",
+  "displayName": "Laravel Artisan Toolkit",
   "description": "Browse, search, copy, and run Laravel Artisan commands from a sidebar panel without typing them in the terminal.",
   "version": "1.0.0",
   "publisher": "bytestacklab",
@@ -15,6 +15,7 @@
   "keywords": [
     "laravel",
     "artisan",
+    "toolkit",
     "php",
     "bytestacklab",
     "make:controller",
